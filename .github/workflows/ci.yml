@@ -1,5 +1,5 @@
 
-name: CI de Registro de Usuarios
+name: CI/CD de Registro de Usuarios
 
 on:
   push:
@@ -42,5 +42,23 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: registro-usuarios-build
-          path: dist/registro-usuarios
+          path: dist/registro-usuarios/browser
           if-no-files-found: error
+
+  desplegar:
+    needs: verificar
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar compilación
+        uses: actions/download-artifact@v4
+        with:
+          name: registro-usuarios-build
+          path: dist/registro-usuarios/browser
+
+      - name: Publicar en Netlify
+        run: npx --yes netlify-cli deploy --prod --dir=dist/registro-usuarios/browser --no-build
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
