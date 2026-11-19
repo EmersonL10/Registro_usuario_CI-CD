@@ -17,7 +17,7 @@ export class Registro {
     nombre: ['', Validators.required],
     apellido: ['', Validators.required],
     correo: ['', [Validators.required, Validators.email]],
-    contrasena: ['', [Validators.required, Validators.minLength(8)]],
+    contrasena: ['', [Validators.required, Validators.minLength(10)]],
   });
 
   registrar() {
