@@ -1,0 +1,64 @@
+
+name: CI/CD de Registro de Usuarios
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+  pull_request:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar pruebas unitarias
+        run: npm test -- --watch=false
+
+      - name: Compilar Angular
+        run: npm run build
+
+      - name: Guardar compilación
+        uses: actions/upload-artifact@v4
+        with:
+          name: registro-usuarios-build
+          path: dist/registro-usuarios/browser
+          if-no-files-found: error
+
+  desplegar:
+    needs: verificar
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar compilación
+        uses: actions/download-artifact@v4
+        with:
+          name: registro-usuarios-build
+          path: dist/registro-usuarios/browser
+
+      - name: Publicar en Netlify
+        run: npx --yes netlify-cli deploy --prod --dir=dist/registro-usuarios/browser --no-build
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
