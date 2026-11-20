@@ -13,6 +13,8 @@ export class Registro {
 
   private fb = new FormBuilder();
 
+  mensajeExito = '';
+
   formulario = this.fb.group({
     nombre: ['', Validators.required],
     apellido: ['', Validators.required],
@@ -21,10 +23,14 @@ export class Registro {
   });
 
   registrar() {
-    if (this.formulario.invalid) {
-      return;
-    }
-
-    console.log('Registro válido');
+  if (this.formulario.invalid) {
+    return;
   }
+
+  console.log('Registro válido');
+
+  this.mensajeExito = '¡Cuenta creada correctamente!';
+
+  this.formulario.reset();
+}
 }

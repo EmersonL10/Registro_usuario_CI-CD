@@ -61,6 +61,12 @@
         Crear cuenta
       </button>
 
+      @if (mensajeExito) {
+        <p class="mensaje-exito" role="status">
+          {{ mensajeExito }}
+        </p>
+      }
+
     </form>
 
     <p class="registro-footer">
