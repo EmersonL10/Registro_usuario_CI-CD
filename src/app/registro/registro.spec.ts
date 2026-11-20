@@ -118,34 +118,61 @@ describe('Registro de usuarios', () => {
   });
 
   
-  it('debe ejecutar la lógica de registro al enviar datos válidos', () => {
-    component.formulario.setValue({
-      nombre: 'Carlos',
-      apellido: 'Perez',
-      correo: 'carlos@gmail.com',
-      contrasena: 'Carlos123',
-    });
+  
+it('debe ejecutar la lógica de registro al enviar datos válidos', () => {
+  component.formulario.setValue({
+    nombre: 'Carlos',
+    apellido: 'Perez',
+    correo: 'carlos@gmail.com',
+    contrasena: 'Carlos123',
+  });
+
+  fixture.detectChanges();
+
+  // Comprobar que los datos son válidos antes del envío
+  expect(component.formulario.valid).toBe(true);
+
+  const consola = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+  try {
+    const formularioHTML = fixture.nativeElement.querySelector(
+      'form'
+    ) as HTMLFormElement;
+
+    formularioHTML.dispatchEvent(
+      new Event('submit', {
+        bubbles: true,
+        cancelable: true,
+      })
+    );
 
     fixture.detectChanges();
 
-    const consola = vi.spyOn(console, 'log').mockImplementation(() => {});
+    // Verificar que se ejecutó el registro
+    expect(consola).toHaveBeenCalledWith('Registro válido');
 
-    try {
-      const formularioHTML = fixture.nativeElement.querySelector(
-        'form'
-      ) as HTMLFormElement;
+    // Verificar el mensaje de confirmación
+    expect(component.mensajeExito).toBe('¡Cuenta creada correctamente!');
 
-      formularioHTML.dispatchEvent(
-        new Event('submit', {
-          bubbles: true,
-          cancelable: true,
-        })
-      );
+    // Verificar que los campos quedaron vacíos
+    expect(component.formulario.value.nombre).toBeNull();
+    expect(component.formulario.value.apellido).toBeNull();
+    expect(component.formulario.value.correo).toBeNull();
+    expect(component.formulario.value.contrasena).toBeNull();
 
-      expect(component.formulario.valid).toBe(true);
-      expect(consola).toHaveBeenCalledWith('Registro válido');
-    } finally {
-      consola.mockRestore();
-    }
-  });
+    // Verificar que el formulario está listo para otro registro
+    expect(component.formulario.invalid).toBe(true);
+
+    // Verificar que el mensaje aparece en pantalla
+    const mensaje = fixture.nativeElement.querySelector(
+      '.mensaje-exito'
+    ) as HTMLElement;
+
+    expect(mensaje.textContent).toContain('¡Cuenta creada correctamente!');
+
+  } finally {
+    consola.mockRestore();
+  }
+});
+
 });
