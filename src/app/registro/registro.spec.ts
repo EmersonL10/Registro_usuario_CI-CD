@@ -129,7 +129,6 @@ it('debe ejecutar la lógica de registro al enviar datos válidos', () => {
 
   fixture.detectChanges();
 
-  
   expect(component.formulario.valid).toBe(true);
 
   const consola = vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -147,23 +146,18 @@ it('debe ejecutar la lógica de registro al enviar datos válidos', () => {
     );
 
     fixture.detectChanges();
-
     
     expect(consola).toHaveBeenCalledWith('Registro válido');
 
-    
     expect(component.mensajeExito).toBe('¡Cuenta creada correctamente!');
-
     
     expect(component.formulario.value.nombre).toBeNull();
     expect(component.formulario.value.apellido).toBeNull();
     expect(component.formulario.value.correo).toBeNull();
     expect(component.formulario.value.contrasena).toBeNull();
-
     
     expect(component.formulario.invalid).toBe(true);
 
-    
     const mensaje = fixture.nativeElement.querySelector(
       '.mensaje-exito'
     ) as HTMLElement;
